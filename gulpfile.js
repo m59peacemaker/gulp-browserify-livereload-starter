@@ -1,11 +1,8 @@
 var gulp       = require('gulp')
-var concat     = require('gulp-concat')
 var watchify   = require('watchify')
 var browserify = require('browserify')
 var hmr        = require('browserify-hmr')
 var source     = require('vinyl-source-stream')
-var buffer     = require('vinyl-buffer')
-var es         = require('event-stream')
 var path       = require('path')
 var del        = require('del')
 var Server     = require('dust-server')
@@ -57,21 +54,18 @@ function js(opts) {
     watch: false
   }, opts)
 
+  opts.watch && (config.browserify.debug = true)
+
   var bundler = browserify(config.browserify)
 
   function bundle() {
     console.log('Building JS...')
-    var depStream = gulp.src(config.jsDeps)
-    var bundleStream = bundler.bundle()
+    return bundler.bundle()
       .on('error', function(err) {
         console.log(err.message)
         this.emit('end')
       })
       .pipe(source('index.js'))
-
-    return es.merge(depStream, bundleStream)
-      .pipe(buffer())
-      .pipe(concat('index.js'))
       .pipe(gulp.dest(config.dest))
       .on('end', function() {
         console.log('JS complete.')
@@ -89,7 +83,7 @@ function js(opts) {
     }
   }
 
-  return bundle()
+  bundle()
 }
 
 function copyToBuild() {

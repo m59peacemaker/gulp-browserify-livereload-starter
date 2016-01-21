@@ -2,9 +2,7 @@
   "name": "",
   "version": "",
   "description": "",
-  "keywords": [
-
-  ],
+  "keywords": [],
   "build": {
     "dest": "./www",
     "browserify": {
@@ -15,7 +13,6 @@
     "copy": [
       "./src/index.html"
     ],
-    "jsDeps": [],
     "server": {
       "port": 8080
     },
@@ -47,8 +44,6 @@
     "dust-server": "^1.0.1",
     "event-stream": "^3.3.2",
     "gulp": "^3.9.0",
-    "gulp-concat": "^2.6.0",
-    "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.4.0"
   }
