@@ -13,26 +13,27 @@ var server = Server({
   root: config.dest
 })
 
-gulp.task('default', ['build-live-hmr'])
+gulp.task('default', ['build-hmr'])
 gulp.task('clean', clean)
-gulp.task('build', function() {
-  copyToBuild()
+gulp.task('build', build)
+gulp.task('build-hmr', () => buildLive({watch: 'hmr'}))
+gulp.task('build-live', () => buildLive({watch: true}))
+
+function build() {
   js()
-})
-gulp.task('build-live-hmr', function() {
-  server.listen(config.server.port)
+  copyToBuild()
+}
+
+function buildLive(jsOpts) {
+  js(jsOpts || {})
+  copyToBuild()
   watchCopy()
-  js({
-    watch: 'hmr'
-  })
-})
-gulp.task('build-live', function() {
   server.listen(config.server.port)
-  watchCopy()
-  js({
-    watch: true
-  })
-})
+}
+
+function copyToBuild() {
+  return gulp.src(config.copy, {base: './src'}).pipe(gulp.dest(config.dest))
+}
 
 function watchCopy() {
   return gulp.watch(config.copy, {base: './src'}, function(event) {
@@ -84,8 +85,4 @@ function js(opts) {
   }
 
   bundle()
-}
-
-function copyToBuild() {
-  return gulp.src(config.copy, {base: './src'}).pipe(gulp.dest(config.dest))
 }
