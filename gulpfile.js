@@ -1,6 +1,8 @@
 var gulp       = require('gulp')
 var watchify   = require('watchify')
 var browserify = require('browserify')
+var streamify  = require('gulp-streamify')
+var uglify     = require('gulp-uglify')
 var hmr        = require('browserify-hmr')
 var source     = require('vinyl-source-stream')
 var path       = require('path')
@@ -61,12 +63,14 @@ function js(opts) {
 
   function bundle() {
     console.log('Building JS...')
-    return bundler.bundle()
+    var stream = bundler.bundle()
       .on('error', function(err) {
         console.log(err.message)
         this.emit('end')
       })
       .pipe(source('index.js'))
+    stream = opts.watch ? stream : stream.pipe(streamify(uglify()))
+    stream
       .pipe(gulp.dest(config.dest))
       .on('end', function() {
         console.log('JS complete.')
@@ -74,6 +78,7 @@ function js(opts) {
           server.reload()
         }
       })
+    return stream;
   }
 
   if (opts.watch) {
